@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://clidb4g575dsl"]
+
+[ext_resource type="Script" path="res://Scenes/Main/Server.gd" id="1_6k308"]
+[ext_resource type="Script" path="res://Scenes/Main/PlayerStats.gd" id="2_v8gwf"]
+
+[node name="Server" type="Node"]
+script = ExtResource("1_6k308")
+
+[node name="PlayerStats" type="Node" parent="."]
+script = ExtResource("2_v8gwf")
