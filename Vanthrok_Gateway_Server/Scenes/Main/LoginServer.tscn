@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cpkuni10kmpk6"]
+
+[node name="GatewayServer" type="Node"]
