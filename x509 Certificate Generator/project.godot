@@ -10,20 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Vanthrok_Gateway_Server"
-run/main_scene="res://Scenes/Main/LoginServer.tscn"
+config/name="X509 Certificate Generator"
+run/main_scene="res://x_509_generator.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
-
-[autoload]
-
-Authenticate="*res://Scenes/Singletons/Authenticate.gd"
-Gateway="*res://Scenes/Singletons/Gateway.gd"
-
-[filesystem]
-
-import/blender/enabled=false
-
-[network]
-
-tls/certificate_bundle_override="res://Certificate/X509_Certificate.crt"
