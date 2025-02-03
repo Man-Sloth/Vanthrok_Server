@@ -20,7 +20,6 @@ func StartServer():
 	#multiplayer.set_root_node(self)
 	multiplayer.multiplayer_peer = network
 	print("Gateway server started")
-	print("Authentication Server ID: " +  str(multiplayer.get_unique_id()))
 	multiplayer.peer_connected.connect(_Peer_Connected)
 	multiplayer.peer_disconnected.connect(_Peer_Disconnected)
 	
@@ -37,12 +36,12 @@ func LoginRequest(username, password):
 	Authenticate.AuthenticatePlayer(username, password, player_id)
 
 @rpc ("any_peer", "call_remote", "reliable")
-func S_ReturnLoginRequest(result, player_id):
-	rpc_id(player_id, "ReturnLoginRequest", result)
+func S_ReturnLoginRequest(result, player_id, token):
+	rpc_id(player_id, "ReturnLoginRequest", result, token)
 	#network.disconnect_peer(player_id)
 	
 @rpc ("any_peer", "call_remote", "reliable")
-func ReturnLoginRequest(results):
+func ReturnLoginRequest(results, token):
 	pass
 	
 @rpc("any_peer", "call_remote", "reliable")

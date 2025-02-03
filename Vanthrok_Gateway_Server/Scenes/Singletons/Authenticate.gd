@@ -26,9 +26,9 @@ func AuthenticatePlayer(username, password, player_id):
 	rpc_id(1, "S_AuthenticatePlayer", username, password, player_id)
 	
 @rpc("any_peer", "call_remote", "reliable")
-func AuthenticationResults(result, player_id):
+func AuthenticationResults(result, player_id, token):
 	print("results received and replying to player login request")
-	Gateway.S_ReturnLoginRequest(result, player_id)
+	Gateway.S_ReturnLoginRequest(result, player_id, token)
 	
 @rpc("any_peer", "call_remote", "reliable")
 func S_AuthenticatePlayer(username, password, player_id):

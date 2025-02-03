@@ -19,3 +19,7 @@ config/icon="res://icon.svg"
 
 Authenticate="*res://Scenes/Singletons/Authenticate.gd"
 Gateway="*res://Scenes/Singletons/Gateway.gd"
+
+[filesystem]
+
+import/blender/enabled=false
