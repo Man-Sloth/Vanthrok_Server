@@ -31,6 +31,19 @@ func AuthenticationResults(result, player_id, token):
 	Gateway.S_ReturnLoginRequest(result, player_id, token)
 	
 @rpc("any_peer", "call_remote", "reliable")
+func CreateAccount(username, password, player_id):
+	print("Sending out create account request")
+	rpc_id(1, "S_CreateAccount", username, password, player_id)
+	
+@rpc("any_peer", "call_remote", "reliable")
+func CreateAccountResults(result, player_id, message):
+	print("Results received and replying to player create account request")
+	Gateway.S_ReturnCreateAccount(result, player_id, message)
+	
+@rpc("any_peer", "call_remote", "reliable")
 func S_AuthenticatePlayer(username, password, player_id):
 	pass
 	
+@rpc("any_peer", "call_remote", "reliable")
+func S_CreateAccount(username, password, player_id):
+	pass

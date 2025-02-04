@@ -1,6 +1,8 @@
 # Godot 4+ specific ignores
 .godot/
 Builds/
+x509 Certificate Generator/
 *.txt
 *.exe
 *.TMP
+*.key

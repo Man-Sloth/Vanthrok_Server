@@ -49,12 +49,28 @@ func S_AuthenticatePlayer(username, password, player_id):
 	token = hashed + timestamp
 	print("Token: " + str(token))
 	var gameserver = "GameServer1"
-	GameServers.DistributeLoginToken(token, gameserver)
+	if result:
+		GameServers.DistributeLoginToken(token, gameserver)
 	
 	
 	print("Authentication result sent to gateway server")
 	rpc_id(gateway_id, "AuthenticationResults", result, player_id, token)
 	
+@rpc("any_peer", "call_remote", "reliable")
+func S_CreateAccount(username, password, player_id):
+	var gateway_id = multiplayer.get_remote_sender_id()
+	var result
+	var message
+	if PlayerData.PlayerIDs.has(username):
+		result = false
+		message = 2
+	else:
+		result = true
+		message = 3
+		PlayerData.PlayerIDs[username] = {"Password": password}
+		PlayerData.SavePlayerIDs()
+		
+	rpc_id(gateway_id, "CreateAccountResults", result, player_id, message)
 
 @rpc("any_peer", "call_remote", "reliable")
 func AuthenticatePlayer(username, password, player_id):
@@ -64,3 +80,10 @@ func AuthenticatePlayer(username, password, player_id):
 func AuthenticationResults(result, player_id, token):
 	pass
 
+@rpc("any_peer", "call_remote", "reliable")
+func CreateAccount(username, password, player_id):
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+func CreateAccountResults(result, player_id, message):
+	pass

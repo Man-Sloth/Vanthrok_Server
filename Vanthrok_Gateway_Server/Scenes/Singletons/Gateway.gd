@@ -41,12 +41,47 @@ func LoginRequest(username, password):
 @rpc ("any_peer", "call_remote", "reliable")
 func S_ReturnLoginRequest(result, player_id, token):
 	rpc_id(player_id, "ReturnLoginRequest", result, token)
-	#network.disconnect_peer(player_id)
+	#network.disconnect_peer(player_id) #Call after Result is successfully returned
 	
 @rpc ("any_peer", "call_remote", "reliable")
-func ReturnLoginRequest(results, token):
+func CreateAccount(username, password):
+	var player_id = multiplayer.get_remote_sender_id()
+	var valid_request = true
+	if username == "":
+		valid_request = false
+	if password == "":
+		valid_request = false
+	if password.length() <= 6:
+		valid_request = false
+	
+	if valid_request == false:
+		S_ReturnCreateAccount(valid_request,player_id, 1)
+	else:
+		Authenticate.CreateAccount(username, password, player_id)
+
+@rpc ("any_peer", "call_remote", "reliable")
+func S_ReturnCreateAccount(result, player_id, message):
+	rpc_id(player_id, "ReturnCreateAccount", result, message)
+	#1 = failed to create, 2 = existing username, 3 = welcome
+	#network.disconnect_peer(player_id) #Call after Result is successfully returned
+
+@rpc("any_peer", "call_remote", "reliable")
+func SafeDisconnect():
+	var player_id = multiplayer.get_remote_sender_id()
+	network.disconnect_peer(player_id)
+	
+@rpc ("any_peer", "call_remote", "reliable")
+func ReturnLoginRequest(result, token):
 	pass
 	
 @rpc("any_peer", "call_remote", "reliable")
 func RequestLogin():
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+func ReturnCreateAccount(result, message):
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+func RequestCreateAccount():
 	pass
