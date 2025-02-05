@@ -21,37 +21,51 @@ func _Peer_Connected(gateway_id):
 func _Peer_Disconnected(gateway_id):
 	print("Gateway " + str(gateway_id) + " Disconnected")
 	
+func GenerateSalt():
+	randomize()
+	var salt = str(randi()).sha256_text()
+	print ("Salt: " + salt)
+	return salt
+
+func GenerateHashedPassword(password, salt):
+	print(str(Time.get_ticks_msec()))
+	var hashed_password = password
+	var rounds = pow(2,18) #pow(2,18) = 262144 times longer to brute force
+	print("hashed password as input: " + hashed_password)
+	while rounds > 0:
+		hashed_password = (hashed_password + salt).sha256_text()
+		#print("password @ round: " + str(rounds) + " is: " + hashed_password)
+		rounds -= 1
+	print("final hashed password: " + hashed_password)
+	print(str(Time.get_ticks_msec()))
+	return hashed_password
+	
 @rpc("any_peer", "call_remote", "reliable")
 func S_AuthenticatePlayer(username, password, player_id):
 	print("Authentication request received")
-	var token
 	var gateway_id = multiplayer.get_remote_sender_id()
+	var token
 	var result
+	var hashed_password
 	print("Starting authentication")
 	
 	if !PlayerData.PlayerIDs.has(username):
 		print("User not recognized")
 		result = false
-	elif !PlayerData.PlayerIDs[username].Password == password:
-		print ("Incorrect password")
-		result = false
 	else:
-		print("Successful authentication")
-		result = true
-	
-	randomize()
-	var random_number = randi()
-	print("Random Number: " + str(random_number))
-	var hashed = str(random_number).sha256_text()
-	print("Hashed: " + str(hashed))
-	var timestamp = str(Time.get_ticks_msec())
-	print("TimeStamp: " + str(timestamp))
-	token = hashed + timestamp
-	print("Token: " + str(token))
-	var gameserver = "GameServer1"
-	if result:
-		GameServers.DistributeLoginToken(token, gameserver)
-	
+		var retrieved_salt = PlayerData.PlayerIDs[username].Salt
+		hashed_password = GenerateHashedPassword(password, retrieved_salt)
+		if !PlayerData.PlayerIDs[username].Password == hashed_password:
+			print ("Incorrect password")
+			result = false
+		else:
+			print("Successful authentication")
+			result = true
+			
+			randomize()
+			token = str(randi()).sha256_text() + str(Time.get_ticks_msec())
+			var gameserver = "GameServer1" #This will need to be replaced with a load balancer for multiple game servers
+			GameServers.DistributeLoginToken(token, gameserver)
 	
 	print("Authentication result sent to gateway server")
 	rpc_id(gateway_id, "AuthenticationResults", result, player_id, token)
@@ -67,7 +81,9 @@ func S_CreateAccount(username, password, player_id):
 	else:
 		result = true
 		message = 3
-		PlayerData.PlayerIDs[username] = {"Password": password}
+		var salt = GenerateSalt()
+		var hashed_password = GenerateHashedPassword(password, salt)
+		PlayerData.PlayerIDs[username] = {"Password": hashed_password, "Salt": salt}
 		PlayerData.SavePlayerIDs()
 		
 	rpc_id(gateway_id, "CreateAccountResults", result, player_id, message)
