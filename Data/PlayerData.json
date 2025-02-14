@@ -1,8 +1,6 @@
 {
-	"Players": {
+	"Player Stats": {
 
-		"Man Sloth": {
-			"Password": poopypants
-		}
+		"Damage": 20
 	}
 }
