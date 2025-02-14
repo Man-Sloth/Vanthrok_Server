@@ -1,6 +1,6 @@
 extends Node
 
 
-func S_FetchPlayerStats(player_stats):
+func S_FetchPlayerStats():
 	var stats = ServerData.player_data
 	return stats

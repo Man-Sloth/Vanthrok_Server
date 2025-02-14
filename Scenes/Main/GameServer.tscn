@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3 uid="uid://clidb4g575dsl"]
+
+[ext_resource type="Script" path="res://Scenes/Main/GameServer.gd" id="1_furqv"]
+[ext_resource type="Script" path="res://Scenes/Main/PlayerStats.gd" id="2_as2i4"]
+[ext_resource type="Script" path="res://Scenes/Main/PlayerVerification.gd" id="2_lycf4"]
+[ext_resource type="Script" path="res://Scenes/Main/StateProcessing.gd" id="3_huym4"]
+[ext_resource type="Script" path="res://Scenes/Main/Combat.gd" id="4_c1kpr"]
+[ext_resource type="Script" path="res://Scenes/Main/Map.gd" id="6_543p7"]
+
+[node name="GameServer" type="Node"]
+script = ExtResource("1_furqv")
+
+[node name="PlayerVerification" type="Node" parent="."]
+script = ExtResource("2_lycf4")
+
+[node name="VerificationExpiration" type="Timer" parent="PlayerVerification"]
+wait_time = 10.0
+autostart = true
+
+[node name="StateProcessing" type="Node" parent="."]
+script = ExtResource("3_huym4")
+
+[node name="PlayerStats" type="Node" parent="."]
+script = ExtResource("2_as2i4")
+
+[node name="Combat" type="Node" parent="."]
+script = ExtResource("4_c1kpr")
+
+[node name="TokenExpiration" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true
+
+[node name="Map" type="Node" parent="."]
+script = ExtResource("6_543p7")
+
+[connection signal="timeout" from="PlayerVerification/VerificationExpiration" to="PlayerVerification" method="_on_verification_expiration_timeout"]
+[connection signal="timeout" from="TokenExpiration" to="." method="_on_token_expiration_timeout"]

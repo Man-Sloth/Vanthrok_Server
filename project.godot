@@ -10,11 +10,20 @@ config_version=5
 
 [application]
 
-config/name="Vanthrok_Server"
-run/main_scene="res://Scenes/Main/Server.tscn"
+config/name="Vanthrok_Game_Server"
+run/main_scene="res://Scenes/Main/GameServer.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 ServerData="*res://Scenes/Singletons/ServerData.gd"
+HubConnection="*res://Scenes/Singletons/HubConnection.gd"
+
+[filesystem]
+
+import/blender/enabled=false
+
+[physics]
+
+common/physics_ticks_per_second=20
