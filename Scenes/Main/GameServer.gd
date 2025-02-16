@@ -113,6 +113,15 @@ func S_DetermineLatency(client_time):
 @rpc ("any_peer", "call_remote", "reliable")
 func SendNPCHit(enemy_id, damage):
 	get_node("Map").NPCHit(enemy_id, damage)
+	
+@rpc ("any_peer", "call_remote", "reliable")
+func Attack(position, facing, spawn_time): #spawn time for projectiles
+	var player_id = multiplayer.get_remote_sender_id()
+	rpc_id(0, "ReceiveAttack", position, facing, spawn_time, player_id)
+	
+@rpc("any_peer", "call_remote", "reliable")
+func ReceiveAttack(position, facing, spawn_time, id): #spawn time for projectiles
+	pass
 
 @rpc("any_peer", "call_remote", "reliable")
 func ReturnPlayerStats(stats):
