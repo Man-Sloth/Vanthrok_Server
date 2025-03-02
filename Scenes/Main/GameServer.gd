@@ -18,9 +18,31 @@ var player_state_collection = {}
 var players = {}
 var player_info = {"name": "Name"}
 var players_loaded = 0
+var start_time = 0
+var tod = 0
+var tod_ratio = 12
+var tod_image = 0
+var last_image = 0
 
 func _ready():
 	StartServer()
+	start_time = Time.get_unix_time_from_system()
+	tod = (Time.get_unix_time_from_system() - start_time) / tod_ratio
+	tod_image = int(tod/360)
+	
+func _process(_delta):
+	# 360 day cycle pictures per 2 hours
+	tod = (Time.get_unix_time_from_system() - start_time) * tod_ratio
+	tod_image = int(tod/360)
+	if tod_image>= 360:
+		start_time = Time.get_unix_time_from_system()
+		tod_image = 0
+	
+	if tod_image != last_image:
+		SendTOD(tod_image, 0)
+	
+	last_image = tod_image
+	
 	
 func StartServer():
 	#multiplayer.multiplayer_peer = null  #Terminates network
@@ -35,6 +57,7 @@ func _on_player_connected(player_id):
 	#_register_player.rpc_id(id, player_info)
 	print("User: " + str(player_id) + " Connected")
 	player_verification_process.start(player_id)
+	SendTOD(tod_image, player_id)
 	
 func _on_player_disconnected(player_id):
 	print("User: " + str(player_id) + " Disconnected")
@@ -62,6 +85,9 @@ func S_FetchToken(player_id):
 func SendWorldState(world_state):
 	rpc_id(0, "ReceiveWorldState", world_state)
 
+func SendTOD(new_tod_image, player_id):
+	rpc_id(player_id, "ReceiveTOD", new_tod_image)
+	
 @rpc ("any_peer", "call_remote", "reliable")
 func ReturnToken(token):
 	var player_id = multiplayer.get_remote_sender_id()
@@ -115,19 +141,23 @@ func SendNPCHit(enemy_id, damage):
 	get_node("Map").NPCHit(enemy_id, damage)
 	
 @rpc ("any_peer", "call_remote", "reliable")
-func Attack(position, facing, spawn_time): #spawn time for projectiles
+func Attack(facing, spawn_time): #spawn time for projectiles
 	var player_id = multiplayer.get_remote_sender_id()
-	rpc_id(0, "ReceiveAttack", position, facing, spawn_time, player_id)
+	rpc_id(0, "ReceiveAttack", facing, spawn_time, player_id)
+
 	
 @rpc("any_peer", "call_remote", "reliable")
-func ReceiveAttack(position, facing, spawn_time, id): #spawn time for projectiles
+@warning_ignore("unused_parameter")
+func ReceiveAttack(facing, spawn_time, id): #spawn time for projectiles
 	pass
 
 @rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
 func ReturnPlayerStats(stats):
 	pass
 	
 @rpc ("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
 func ReturnTokenVerificationResults(result):
 	pass
 	
@@ -136,25 +166,36 @@ func FetchToken():
 	pass
 
 @rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
 func SpawnNewPlayer(player_id, spawn_position):
 	pass
 	
 @rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
 func DespawnPlayer(player_id):
 	pass
 
 @rpc("any_peer", "call_remote", "unreliable")
+@warning_ignore("unused_parameter")
 func ReceiveWorldState(world_state):
 	pass
 
 @rpc("any_peer", "call_remote", "unreliable")
+@warning_ignore("unused_parameter")
 func SendPlayerState(player_state):
 	pass
 
 @rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
 func ReturnServerTime(server_time, client_time):
 	pass
 	
 @rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
 func ReturnLatency(client_time):
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
+func ReceiveTOD(tod_index):
 	pass

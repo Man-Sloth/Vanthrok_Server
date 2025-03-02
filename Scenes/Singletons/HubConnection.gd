@@ -10,7 +10,7 @@ var port = 1912
 func _ready():
 	ConnectToServer()
 	
-func _process(delta):
+func _process(_delta):
 	if multiplayer == null:
 		return
 	if !multiplayer.has_multiplayer_peer():
@@ -28,6 +28,7 @@ func ConnectToServer():
 func _OnConnectionFailed():
 	print("Failed to connect to Game Server Hub")
 	
+@warning_ignore("unused_parameter")
 func _OnConnectionSucceeded(id):
 	print("Successfully connected to Game Server Hub")
 	
