@@ -7,6 +7,7 @@ const max_players = 100
 const DEFAULT_SERVER_IP = "127.0.0.1" # IPv4 localhost
 @onready var player_verification_process = $PlayerVerification
 @onready var combat_functions = $Combat
+@onready var map = $Map
 
 signal player_connected(peer_id, player_info)
 signal player_disconnected(peer_id)
@@ -31,6 +32,9 @@ func _ready():
 	tod_image = int(tod/360)
 	
 func _process(_delta):
+	pass
+
+func _physics_process(_delta):
 	# 360 day cycle pictures per 2 hours
 	tod = (Time.get_unix_time_from_system() - start_time) * tod_ratio
 	tod_image = int(tod/360)
@@ -44,6 +48,7 @@ func _process(_delta):
 	last_image = tod_image
 	
 	
+
 func StartServer():
 	#multiplayer.multiplayer_peer = null  #Terminates network
 	network.create_server(port, max_players)
@@ -61,11 +66,10 @@ func _on_player_connected(player_id):
 	
 func _on_player_disconnected(player_id):
 	print("User: " + str(player_id) + " Disconnected")
-	if has_node(str(player_id)):
-		get_node(str(player_id)).queue_free()
+	if get_node("WorldMap/Chunk 1/Players").has_node(str(player_id)):
+		get_node("WorldMap/Chunk 1/Players/" + str(player_id)).queue_free()
 		player_state_collection.erase(player_id)
 		rpc_id(0, "DespawnPlayer", player_id)
-	
 func _on_token_expiration_timeout():
 	var current_time = (Time.get_unix_time_from_system() * 1000)
 	var token_time
@@ -114,7 +118,8 @@ func S_FetchSkillDamage(skill_name, requester):
 @rpc("any_peer", "reliable")
 func S_FetchPlayerStats():
 	var player_id = multiplayer.get_remote_sender_id()
-	var stats = get_node(str(player_id)).player_stats
+	#var player = get_node("WorldMap/Chunk 1/Players/"+ str(player_id))
+	var stats = get_node("WorldMap/Chunk 1/Players/"+ str(player_id)).player_stats
 	rpc_id(player_id, "ReturnPlayerStats", stats)
 	
 @rpc("any_peer", "call_remote", "unreliable")
@@ -122,6 +127,8 @@ func ReceivePlayerState(player_state):
 	var player_id = multiplayer.get_remote_sender_id()
 	if player_state_collection.has(player_id):
 		if player_state_collection[player_id]["T"] < player_state["T"]:
+			var player = get_node("WorldMap/Chunk 1/Players/" +str(player_id)+"/Player")
+			player.position = player_state_collection[player_id]["P"]
 			player_state_collection[player_id] = player_state
 	else:
 		player_state_collection[player_id] = player_state
@@ -137,14 +144,23 @@ func S_DetermineLatency(client_time):
 	rpc_id(player_id, "ReturnLatency", client_time)
 	
 @rpc ("any_peer", "call_remote", "reliable")
-func SendNPCHit(enemy_id, damage):
-	get_node("Map").NPCHit(enemy_id, damage)
+func SendNPCHit(enemy_id, damage_type):
+	var player_id = multiplayer.get_remote_sender_id()
+	get_node("Map").NPCHit(enemy_id, damage_type, player_id)
 	
 @rpc ("any_peer", "call_remote", "reliable")
 func Attack(facing, spawn_time): #spawn time for projectiles
 	var player_id = multiplayer.get_remote_sender_id()
 	rpc_id(0, "ReceiveAttack", facing, spawn_time, player_id)
 
+@rpc ("any_peer", "call_remote", "reliable")
+func Return_XP(player_id, xp_amount):
+	#player_id.add_xp(xp_amount)
+	rpc_id(player_id, "Receive_XP", xp_amount)
+	
+@rpc ("any_peer", "call_remote", "reliable")
+func Receive_XP():
+	pass
 	
 @rpc("any_peer", "call_remote", "reliable")
 @warning_ignore("unused_parameter")

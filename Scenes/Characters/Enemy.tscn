@@ -1,0 +1,66 @@
+[gd_scene load_steps=4 format=3 uid="uid://b4rwcdlgduiab"]
+
+[ext_resource type="Script" path="res://Scenes/Characters/Enemy.gd" id="1_h0ypm"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1iokw"]
+radius = 92.2695
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7nf7q"]
+radius = 174.184
+
+[node name="Enemy" type="CharacterBody2D" groups=["NPCEnemies"]]
+z_index = 5
+collision_layer = 4
+collision_mask = 6
+input_pickable = true
+motion_mode = 1
+wall_min_slide_angle = 0.0
+script = ExtResource("1_h0ypm")
+
+[node name="SwingBody" type="Area2D" parent="."]
+z_index = 2
+position = Vector2(4, 1)
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwingBody"]
+visible = false
+position = Vector2(1, 2)
+shape = SubResource("CircleShape2D_1iokw")
+
+[node name="AggroBody" type="Area2D" parent="."]
+z_index = 2
+position = Vector2(4, 1)
+scale = Vector2(4.338, 4)
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AggroBody"]
+position = Vector2(1, 2)
+shape = SubResource("CircleShape2D_1iokw")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+target_desired_distance = 150.0
+avoidance_enabled = true
+radius = 100.0
+neighbor_distance = 100.0
+debug_enabled = true
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.1
+autostart = true
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+freeze = true
+freeze_mode = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+z_index = 1
+position = Vector2(0, 2)
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_7nf7q")
+
+[connection signal="body_entered" from="AggroBody" to="." method="_on_aggro_body_body_entered"]
+[connection signal="body_exited" from="AggroBody" to="." method="_on_aggro_body_body_exited"]
+[connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

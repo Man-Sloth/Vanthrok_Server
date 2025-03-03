@@ -1,11 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://clidb4g575dsl"]
+[gd_scene load_steps=8 format=3 uid="uid://clidb4g575dsl"]
 
 [ext_resource type="Script" path="res://Scenes/Main/GameServer.gd" id="1_furqv"]
 [ext_resource type="Script" path="res://Scenes/Main/PlayerStats.gd" id="2_as2i4"]
 [ext_resource type="Script" path="res://Scenes/Main/PlayerVerification.gd" id="2_lycf4"]
 [ext_resource type="Script" path="res://Scenes/Main/StateProcessing.gd" id="3_huym4"]
-[ext_resource type="Script" path="res://Scenes/Main/Combat.gd" id="4_c1kpr"]
 [ext_resource type="Script" path="res://Scenes/Main/Map.gd" id="6_543p7"]
+[ext_resource type="PackedScene" uid="uid://buneh5ptgtg6p" path="res://Scenes/Chunks/chunk_1.tscn" id="7_ghihs"]
+[ext_resource type="Script" path="res://Scenes/Chunks/ServerMap.gd" id="7_k0msq"]
 
 [node name="GameServer" type="Node"]
 script = ExtResource("1_furqv")
@@ -23,15 +24,20 @@ script = ExtResource("3_huym4")
 [node name="PlayerStats" type="Node" parent="."]
 script = ExtResource("2_as2i4")
 
-[node name="Combat" type="Node" parent="."]
-script = ExtResource("4_c1kpr")
-
 [node name="TokenExpiration" type="Timer" parent="."]
 wait_time = 10.0
 autostart = true
 
 [node name="Map" type="Node" parent="."]
 script = ExtResource("6_543p7")
+enemy_spawn_points = [Vector2(-500, 0), Vector2(-250, -500), Vector2(500, 500), Vector2(300, 600), Vector2(150, 500), Vector2(0, 400), Vector2(-100, 300), Vector2(-500, -500), Vector2(-600, 500), Vector2(-500, 300)]
+
+[node name="WorldMap" type="Node2D" parent="."]
+script = ExtResource("7_k0msq")
+
+[node name="Chunk 1" parent="WorldMap" instance=ExtResource("7_ghihs")]
 
 [connection signal="timeout" from="PlayerVerification/VerificationExpiration" to="PlayerVerification" method="_on_verification_expiration_timeout"]
 [connection signal="timeout" from="TokenExpiration" to="." method="_on_token_expiration_timeout"]
+
+[editable path="WorldMap/Chunk 1"]

@@ -1,3 +1,3 @@
 extends Node
 
-var player_stats
+var player_stats ={}
