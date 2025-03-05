@@ -159,7 +159,7 @@ func Return_XP(player_id, xp_amount):
 	rpc_id(player_id, "Receive_XP", xp_amount)
 	
 @rpc ("any_peer", "call_remote", "reliable")
-func Receive_XP():
+func Receive_XP(xp_amount):
 	pass
 	
 @rpc("any_peer", "call_remote", "reliable")

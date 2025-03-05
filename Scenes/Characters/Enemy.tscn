@@ -5,13 +5,13 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_1iokw"]
 radius = 92.2695
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_7nf7q"]
-radius = 174.184
+[sub_resource type="CircleShape2D" id="CircleShape2D_44ob6"]
+radius = 25.0
 
 [node name="Enemy" type="CharacterBody2D" groups=["NPCEnemies"]]
 z_index = 5
 collision_layer = 4
-collision_mask = 6
+collision_mask = 3
 input_pickable = true
 motion_mode = 1
 wall_min_slide_angle = 0.0
@@ -20,7 +20,7 @@ script = ExtResource("1_h0ypm")
 [node name="SwingBody" type="Area2D" parent="."]
 z_index = 2
 position = Vector2(4, 1)
-collision_layer = 4
+collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SwingBody"]
@@ -32,35 +32,42 @@ shape = SubResource("CircleShape2D_1iokw")
 z_index = 2
 position = Vector2(4, 1)
 scale = Vector2(4.338, 4)
-collision_layer = 4
+collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AggroBody"]
+visible = false
 position = Vector2(1, 2)
 shape = SubResource("CircleShape2D_1iokw")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
-target_desired_distance = 150.0
+path_desired_distance = 100.0
+target_desired_distance = 100.0
+path_max_distance = 20.0
 avoidance_enabled = true
-radius = 100.0
-neighbor_distance = 100.0
+radius = 25.0
+avoidance_priority = 0.0
 debug_enabled = true
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
 autostart = true
 
-[node name="RigidBody2D" type="RigidBody2D" parent="."]
-freeze = true
-freeze_mode = 1
+[node name="EnemyBody" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
-z_index = 1
-position = Vector2(0, 2)
-scale = Vector2(0.5, 0.5)
-shape = SubResource("CircleShape2D_7nf7q")
+[node name="EnemyDetector" type="RayCast2D" parent="."]
+collide_with_areas = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_44ob6")
 
 [connection signal="body_entered" from="AggroBody" to="." method="_on_aggro_body_body_entered"]
 [connection signal="body_exited" from="AggroBody" to="." method="_on_aggro_body_body_exited"]
 [connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="area_entered" from="EnemyBody" to="." method="_on_enemy_body_area_entered"]
+[connection signal="area_exited" from="EnemyBody" to="." method="_on_enemy_body_area_exited"]
+[connection signal="body_entered" from="EnemyBody" to="." method="_on_enemy_body_body_entered"]
+[connection signal="body_exited" from="EnemyBody" to="." method="_on_enemy_body_body_exited"]

@@ -8,6 +8,7 @@ var open_locations = [0,1,2,3,4,5,6,7,8,9]
 var occupied_locations = {}
 var enemy_list = {}
 
+
 func _ready():
 	var timer = Timer.new()
 	timer.wait_time = 3
@@ -18,10 +19,14 @@ func _ready():
 	
 func _physics_process(delta):
 	for enemy in enemy_list:
-		var physical_enemy = get_node("/root/GameServer/WorldMap/Chunk 1/Enemies/" + str(enemy))
-		if physical_enemy:
-			enemy_list[enemy]["EnemyLocation"].x = physical_enemy.position.x
-			enemy_list[enemy]["EnemyLocation"].y = physical_enemy.position.y
+		#if get_node("/root/GameServer/WorldMap/Chunk 1/Enemies/" + str(enemy)):
+		if enemy_list[enemy]["EnemyState"] != "Dead":
+			var physical_enemy = get_node("/root/GameServer/WorldMap/Chunk 1/Enemies/" + str(enemy))
+			if physical_enemy:
+				enemy_list[enemy]["EnemyLocation"].x = physical_enemy.position.x
+				enemy_list[enemy]["EnemyLocation"].y = physical_enemy.position.y
+				enemy_list[enemy]["A"] = physical_enemy.facing
+				
 		
 func SpawnEnemy():
 	if enemy_list.size() >= enemy_maximum:
@@ -33,7 +38,7 @@ func SpawnEnemy():
 		var location = enemy_spawn_points[open_locations[rng_location_index]]
 		occupied_locations[enemy_id_counter] = open_locations[rng_location_index]
 		open_locations.remove_at(rng_location_index)
-		enemy_list[enemy_id_counter] = {"EnemyType": type, "EnemyLocation": location, "EnemyHealth": 100, "EnemyMaxHealth": 100, "EnemyState": "Idle", "time_out": 1}
+		enemy_list[enemy_id_counter] = {"EnemyType": type, "EnemyLocation": location, "EnemyHealth": 100, "EnemyMaxHealth": 100, "EnemyState": "Idle", "time_out": 1, "A": 3}
 		get_parent().get_node("WorldMap").SpawnEnemy(enemy_id_counter, location)
 		enemy_id_counter += 1
 	

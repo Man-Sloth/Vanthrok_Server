@@ -1,8 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://buneh5ptgtg6p"]
+[gd_scene load_steps=8 format=3 uid="uid://buneh5ptgtg6p"]
 
 [ext_resource type="TileSet" uid="uid://cayafb86sxmm7" path="res://Assets/TileSets/Ground.tres" id="1_cv7wn"]
+[ext_resource type="Script" path="res://Scenes/Chunks/Navigation.gd" id="1_htjr5"]
 [ext_resource type="TileSet" uid="uid://btvc1fthlgwdo" path="res://Assets/TileSets/Objects.tres" id="2_0squy"]
 [ext_resource type="TileSet" uid="uid://dpjdq4w2778ec" path="res://Assets/TileSets/Ceilings.tres" id="5_3dayd"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_vog0y"]
+vertices = PackedVector2Array(418, -28, 404, -34, 413, -39, 1315, -71, 1323, -66, 1310, -60, 931, -263, 861, -263, 896, -280, 832, 179, 578, 52, 577, 52, 482, 4, 862, -476, 158, -124, -319, -323, -386, -364, -248, 31, -254, -48, 58, 0, 95, 23, -126, 144, -192, 118, 2527, -1257, 2549, 1092, 1670, -32, 1667, -107, -322, -248, 61, -75, -320, -74, -386, -48, -392, 31, -440, -1, -446, -80, -419, -199, 1214, 200, 1214, 199, 1216, 200, -515, -151, -512, -106, 479, 215, -120, 223, 448, 200, -258, 144, -264, 223, -376, 223, -382, 144, -320, 75, 1633, -9, 1570, -156, 1309, 153, 930, -476, -578, -80, -582, -192, -448, 118, -512, 43, 451, 198, 355, 153, -514, 144, -584, -1, 925, -478, 896, -490, -2072, -1301, 867, -478, -482, -316, -579, -267, -2109, 1106, -520, 223, -448, 267, -192, 267, 1117, 249, 925, 345, 832, 392, 739, 345)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2), PackedInt32Array(3, 4, 5, 6), PackedInt32Array(7, 8, 6, 5, 9, 10, 2), PackedInt32Array(2, 10, 11, 12), PackedInt32Array(2, 12, 0), PackedInt32Array(13, 14, 15, 16), PackedInt32Array(17, 18, 19, 20, 21, 22), PackedInt32Array(23, 24, 25, 26), PackedInt32Array(27, 15, 14, 28, 18, 29), PackedInt32Array(30, 31, 32, 33, 34), PackedInt32Array(35, 36, 37, 24), PackedInt32Array(28, 19, 18), PackedInt32Array(34, 27, 29, 30), PackedInt32Array(38, 34, 33, 39), PackedInt32Array(40, 41, 21, 42), PackedInt32Array(43, 44, 45, 46, 47), PackedInt32Array(48, 25, 24), PackedInt32Array(23, 26, 49), PackedInt32Array(50, 48, 24, 37), PackedInt32Array(23, 49, 51), PackedInt32Array(38, 39, 52, 53), PackedInt32Array(54, 55, 32, 31, 46), PackedInt32Array(42, 56, 40), PackedInt32Array(57, 42, 21, 20), PackedInt32Array(17, 22, 43, 47), PackedInt32Array(31, 47, 46), PackedInt32Array(55, 54, 58, 59), PackedInt32Array(23, 51, 60, 61), PackedInt32Array(62, 23, 61, 63, 13, 16), PackedInt32Array(62, 16, 64), PackedInt32Array(62, 64, 65), PackedInt32Array(66, 62, 65, 53), PackedInt32Array(66, 53, 52, 59), PackedInt32Array(66, 59, 58, 67), PackedInt32Array(66, 67, 68), PackedInt32Array(24, 66, 68), PackedInt32Array(24, 68, 45, 69), PackedInt32Array(70, 35, 24), PackedInt32Array(71, 70, 24, 72), PackedInt32Array(45, 44, 69), PackedInt32Array(72, 24, 69), PackedInt32Array(40, 73, 72, 69, 41)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-2136, -1366, 2591, -1321, 2614, 1156, -2174, 1171)])
+parsed_geometry_type = 1
+source_geometry_mode = 1
+source_geometry_group_name = &"Navigation"
+agent_radius = 64.0
 
 [sub_resource type="Gradient" id="Gradient_01uqg"]
 offsets = PackedFloat32Array(0, 0.655329)
@@ -16,6 +26,10 @@ fill_from = Vector2(0.5, 0.5)
 [node name="Chunk 1" type="Node2D"]
 z_as_relative = false
 y_sort_enabled = true
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_vog0y")
+script = ExtResource("1_htjr5")
 
 [node name="Ground" type="TileMap" parent="."]
 light_mask = 4
@@ -53,7 +67,7 @@ layer_5/z_index = 5
 layer_5/navigation_enabled = false
 layer_5/tile_data = PackedInt32Array()
 
-[node name="Outside Objects" type="TileMap" parent="."]
+[node name="Outside Objects" type="TileMap" parent="." groups=["Navigation"]]
 light_mask = 8
 visibility_layer = 8
 z_as_relative = false
@@ -119,7 +133,7 @@ z_as_relative = false
 position = Vector2(-267, -124)
 polygon = PackedVector2Array(542, 221, 577, 185, 634, 214, 595, 251)
 
-[node name="Inside Objects" type="TileMap" parent="."]
+[node name="Inside Objects" type="TileMap" parent="." groups=["Navigation"]]
 visibility_layer = 0
 z_as_relative = false
 y_sort_enabled = true
@@ -204,7 +218,7 @@ texture = SubResource("GradientTexture2D_ccb1o")
 texture_scale = 1.08
 metadata/_edit_lock_ = true
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="TileMap" type="TileMap" parent="." groups=["Navigation"]]
 z_as_relative = false
 y_sort_enabled = true
 tile_set = ExtResource("2_0squy")
@@ -213,7 +227,7 @@ layer_0/y_sort_enabled = true
 layer_0/z_index = 5
 layer_0/tile_data = PackedInt32Array(-524293, 3, 6, -589828, 3, 6)
 
-[node name="Enemies" type="Node2D" parent="."]
+[node name="Enemies" type="Node2D" parent="." groups=["Navigation"]]
 
 [node name="Players" type="Node2D" parent="."]
 

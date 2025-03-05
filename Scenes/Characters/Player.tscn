@@ -1,15 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://cykyoaocrwsx"]
+[gd_scene load_steps=3 format=3 uid="uid://cykyoaocrwsx"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7nf7q"]
-radius = 62.0
+radius = 114.306
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_abb3k"]
+radius = 232.86
 
 [node name="Player" type="CharacterBody2D" groups=["Players"]]
 light_mask = 15
 visibility_layer = 15
 z_index = 5
 y_sort_enabled = true
-position = Vector2(0, 5)
 collision_layer = 2
+collision_mask = 5
 
 [node name="SwingTimer" type="Timer" parent="."]
 wait_time = 2.0
@@ -17,6 +20,41 @@ wait_time = 2.0
 [node name="Feet" type="CollisionShape2D" parent="."]
 visibility_layer = 2
 z_index = 1
-position = Vector2(0, 6.24)
+position = Vector2(0, -4.76837e-07)
 scale = Vector2(0.35, 0.35)
 shape = SubResource("CircleShape2D_7nf7q")
+
+[node name="PlayerBody" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerBody"]
+visible = false
+position = Vector2(0, -5)
+shape = SubResource("CircleShape2D_abb3k")
+
+[node name="Surround" type="Node2D" parent="."]
+
+[node name="N" type="Node2D" parent="Surround"]
+position = Vector2(0, -50)
+
+[node name="NE" type="Node2D" parent="Surround"]
+position = Vector2(35, -35)
+
+[node name="E" type="Node2D" parent="Surround"]
+position = Vector2(50, 0)
+
+[node name="SE" type="Node2D" parent="Surround"]
+position = Vector2(35, 35)
+
+[node name="S" type="Node2D" parent="Surround"]
+position = Vector2(0, 50)
+
+[node name="SW" type="Node2D" parent="Surround"]
+position = Vector2(-35, 35)
+
+[node name="W" type="Node2D" parent="Surround"]
+position = Vector2(-50, 0)
+
+[node name="NW" type="Node2D" parent="Surround"]
+position = Vector2(-35, -35)

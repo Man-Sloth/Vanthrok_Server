@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=45 format=3 uid="uid://btvc1fthlgwdo"]
+[gd_resource type="TileSet" load_steps=40 format=3 uid="uid://btvc1fthlgwdo"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_c5c2f"]
 tile_data = PackedInt32Array(720896, 1179707, 37, 851968, 59, 49, 65537, 65595, 4, 720897, 131131, 49, 393218, 458811, 3, 65539, 852027, 3, 655363, 1179707, 37, 458756, 852027, 3, 786436, 1179707, 37, 851972, 59, 49, 720901, 131131, 49, 6, 1245243, 3, 262150, 65595, 18, 786438, 1179707, 37, 524295, 458811, 19, 786439, 131131, 49, 262152, 852027, 16, 786440, 1179707, 37, 9, 1310779, 16, 524297, 65595, 29, 720905, 59, 49, 851977, 1179707, 37, 262154, 458811, 28, 65547, 65595, 43, 524299, 1245243, 30, 589835, 524347, 43, 917515, 59, 49, 262156, 524347, 43)
@@ -12,63 +12,23 @@ tile_data = PackedInt32Array(1, 458811, 28, 262145, 65595, 4, 786433, 65595, 4, 
 [sub_resource type="TileMapPattern" id="TileMapPattern_h0x0q"]
 tile_data = PackedInt32Array(0, 458811, 28, 262144, 65595, 4, 786432, 65595, 4, 1179648, 1245243, 3, 1835008, 458811, 28, 2097152, 65595, 18, 524289, 65595, 18, 1441793, 65595, 4, 65537, 65595, 18, 655362, 458811, 19, 983041, 65595, 18, 1703938, 65595, 18, 2031617, 65595, 43, 3, 1310779, 16, 524291, 852027, 28, 1179651, 458811, 3, 524292, 65595, 4, 917508, 65595, 43, 1507331, 852027, 3, 1900547, 458811, 28, 2162691, 65595, 43, 131077, 458811, 3, 1703941, 1310779, 16, 655366, 458811, 3, 1245189, 1245243, 3, 2097158, 1245243, 30, 65542, 458811, 3, 917511, 65595, 43, 1441799, 458811, 28, 1703943, 65595, 29, 458759, 1310779, 16, 1966088, 852027, 3, 65544, 852027, 3, 786441, 65595, 4, 1179657, 65595, 4, 10, 65595, 43, 524298, 65595, 29, 1507337, 458811, 3, 2162697, 852027, 16, 655371, 458811, 19, 1048587, 1245243, 3, 1835019, 1245243, 3, 65547, 458811, 19, 458763, 65595, 29, 720907, 65595, 18, 1376267, 1310779, 16, 1638411, 524347, 43, 2031627, 852027, 28)
 
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_i43f6"]
-vertices = PackedVector2Array(64, 0, 0, 32, -64, 0, 0, -32)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(0, -32, -64, 0, 0, 32, 64, 0)])
-source_geometry_group_name = &"navigation_polygon_source_group"
-agent_radius = 0.0
-
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_gg38a"]
-vertices = PackedVector2Array(64, 0, 0, 32, -64, 0, 0, -32)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(0, -32, -64, 0, 0, 32, 64, 0)])
-source_geometry_group_name = &"navigation_polygon_source_group"
-agent_radius = 0.0
-
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_3861p"]
-vertices = PackedVector2Array(64, 0, 0, 32, -64, 0, 0, -32)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(0, -32, -64, 0, 0, 32, 64, 0)])
-source_geometry_group_name = &"navigation_polygon_source_group"
-agent_radius = 0.0
-
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_jc6sn"]
-vertices = PackedVector2Array(64, 0, 0, 32, -64, 0, 0, -32)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(0, -32, -64, 0, 0, 32, 64, 0)])
-source_geometry_group_name = &"navigation_polygon_source_group"
-agent_radius = 0.0
-
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_os38p"]
-vertices = PackedVector2Array(64, 0, 0, 32, -64, 0, 0, -32)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(0, -32, -64, 0, 0, 32, 64, 0)])
-source_geometry_group_name = &"navigation_polygon_source_group"
-agent_radius = 0.0
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n8a2y"]
 texture_region_size = Vector2i(128, 64)
 0:0/0 = 0
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:0/0/physics_layer_0/angular_velocity = 0.0
-0:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_i43f6")
 1:0/0 = 0
 1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 1:0/0/physics_layer_0/angular_velocity = 0.0
-1:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_jc6sn")
 0:1/0 = 0
 0:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:1/0/physics_layer_0/angular_velocity = 0.0
-0:1/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_gg38a")
 1:1/0 = 0
 1:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 1:1/0/physics_layer_0/angular_velocity = 0.0
-1:1/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_os38p")
 0:2/0 = 0
 0:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:2/0/physics_layer_0/angular_velocity = 0.0
-0:2/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_3861p")
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_l78i2"]
 
@@ -450,8 +410,7 @@ uv_clipping = true
 occlusion_layer_0/light_mask = 2
 occlusion_layer_0/sdf_collision = true
 physics_layer_0/collision_layer = 1
-physics_layer_0/collision_mask = 2
-navigation_layer_0/layers = 1
+physics_layer_0/collision_mask = 6
 sources/5 = SubResource("TileSetAtlasSource_mdrym")
 sources/3 = SubResource("TileSetAtlasSource_jrr35")
 sources/0 = SubResource("TileSetAtlasSource_n8a2y")

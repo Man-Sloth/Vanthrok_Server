@@ -63,7 +63,7 @@ func SendAttack(facing):
 
 @rpc("any_peer", "call_remote", "reliable")
 func ReceiveTOD(tod_index):
-	GameManager.set_tod(tod_index)
+	pass
 
 @rpc ("any_peer", "call_remote", "reliable")
 func ReceiveAttack(facing, spawn_time, id): #spawn time for projectiles
