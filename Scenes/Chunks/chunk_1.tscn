@@ -12,7 +12,7 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(-2136, -1366, 2591, -13
 parsed_geometry_type = 1
 source_geometry_mode = 1
 source_geometry_group_name = &"Navigation"
-agent_radius = 64.0
+agent_radius = 50.0
 
 [sub_resource type="Gradient" id="Gradient_01uqg"]
 offsets = PackedFloat32Array(0, 0.655329)

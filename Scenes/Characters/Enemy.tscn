@@ -6,7 +6,7 @@
 radius = 92.2695
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_44ob6"]
-radius = 25.0
+radius = 49.0102
 
 [node name="Enemy" type="CharacterBody2D" groups=["NPCEnemies"]]
 z_index = 5
@@ -25,7 +25,7 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SwingBody"]
 visible = false
-position = Vector2(1, 2)
+position = Vector2(-5, -1)
 shape = SubResource("CircleShape2D_1iokw")
 
 [node name="AggroBody" type="Area2D" parent="."]
@@ -53,13 +53,6 @@ debug_enabled = true
 wait_time = 0.1
 autostart = true
 
-[node name="EnemyBody" type="Area2D" parent="."]
-collision_layer = 4
-collision_mask = 2
-
-[node name="EnemyDetector" type="RayCast2D" parent="."]
-collide_with_areas = true
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_44ob6")
 
@@ -67,7 +60,3 @@ shape = SubResource("CircleShape2D_44ob6")
 [connection signal="body_exited" from="AggroBody" to="." method="_on_aggro_body_body_exited"]
 [connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
-[connection signal="area_entered" from="EnemyBody" to="." method="_on_enemy_body_area_entered"]
-[connection signal="area_exited" from="EnemyBody" to="." method="_on_enemy_body_area_exited"]
-[connection signal="body_entered" from="EnemyBody" to="." method="_on_enemy_body_body_entered"]
-[connection signal="body_exited" from="EnemyBody" to="." method="_on_enemy_body_body_exited"]

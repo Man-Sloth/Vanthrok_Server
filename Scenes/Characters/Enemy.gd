@@ -2,7 +2,6 @@ extends CharacterBody2D
 
 const SPEED = 8000.0
 @onready var nav_agent= $NavigationAgent2D
-@onready var enemy_detector = $EnemyDetector
 const DYNAMIC_BAKE = preload("res://Scenes/Chunks/dynamic_bake.tscn")
 @onready var nav_region = $"../../NavigationRegion2D"
 @export var target: Node2D = null
@@ -18,7 +17,10 @@ var swarm = false
 var bake_timer = 0.0
 var facing_timer: float = 0.0
 var next_facing: int = 3
+var idle = false
+
 func _ready():
+
 	
 	call_deferred("seeker_setup")
 
@@ -33,23 +35,27 @@ func _physics_process(delta):
 	if target != null:
 		if (target.global_position - position).length() >= nav_agent.target_desired_distance:
 			makepath()
-	
+		if !nav_agent.is_target_reachable():
+			nav_agent.target_position = position
+
 		var is_at_target_desired_distance : bool = (position.distance_to(nav_agent.target_position) - nav_agent.target_desired_distance) <= 0.0
 		if is_at_target_desired_distance:
-			if !get_node("DynamicBake"):
+			if !idle:
 				bake_timer += delta
 				if bake_timer >= 1.0:
+					idle = true
 					var bake = DYNAMIC_BAKE.instantiate()
 					add_child(bake)
-					nav_region.bake_navigation_polygon()
+					nav_region.bake = true
 					bake_timer = 0
 					nav_agent.target_desired_distance = 250
 			return
 		else:
-			if get_node("DynamicBake"):
+			if idle:
 				get_node("DynamicBake").queue_free()
-				nav_region.bake_navigation_polygon()
+				nav_region.bake = true
 				nav_agent.target_desired_distance = 100
+				idle = false
 			bake_timer = 0
 
 		var current_agent_position = position
@@ -63,15 +69,8 @@ func _physics_process(delta):
 		
 		find_facing(delta)
 		move_and_slide()
-
-func get_circle_position(random):
-	var kill_circle_center = target.global_position
-	var radius = 40
-	var angle = random * PI * 2;
-	var x = kill_circle_center.x + cos(angle) * radius
-	var y = kill_circle_center.y + sin(angle) * radius
-	
-	return Vector2(x,y)
+	else:
+		nav_agent.target_position = position
 
 func find_facing(delta):
 	var dirX = velocity.normalized().x
