@@ -25,7 +25,7 @@ func ConnectToServer():
 	multiplayer.peer_disconnected.connect(_OnConnectionFailed)
 	multiplayer.peer_connected.connect(_OnConnectionSucceeded)
 	
-func _OnConnectionFailed():
+func _OnConnectionFailed(id):
 	print("Failed to connect to Game Server Hub")
 	
 @warning_ignore("unused_parameter")
@@ -33,5 +33,6 @@ func _OnConnectionSucceeded(id):
 	print("Successfully connected to Game Server Hub")
 	
 @rpc ("any_peer", "call_remote", "reliable")
-func ReceiveLoginToken(token):
+func ReceiveLoginToken(token, name):
 	gameserver.expected_tokens.append(token)
+	gameserver.token_names[str(token)] = str(name)

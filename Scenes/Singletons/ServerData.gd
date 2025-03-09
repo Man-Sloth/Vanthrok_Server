@@ -22,5 +22,6 @@ func _ready():
 	var player_data_text = FileAccess.get_file_as_string("res://Data/PlayerData.json")
 	var player_data_json = JSON.parse_string(player_data_text)
 	
-	player_data = player_data_json["Player Stats"]
+	if player_data_json:
+		player_data = player_data_json["Player Stats"]
 	

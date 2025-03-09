@@ -33,11 +33,11 @@ func _Peer_Connected(gameserver_id):
 func _Peer_Disconnected(gameserver_id):
 	print("Game Server " + str(gameserver_id) + " Disconnected")
 	
-func DistributeLoginToken(token, gameserver):
+func DistributeLoginToken(token, gameserver, name):
 	var gameserver_peer_id = gameserverlist[gameserver]
-	rpc_id(gameserver_peer_id, "ReceiveLoginToken", token)
+	rpc_id(gameserver_peer_id, "ReceiveLoginToken", token, name)
 
 @rpc ("any_peer", "call_remote", "reliable")
-func ReceiveLoginToken(token):
+func ReceiveLoginToken(token, name):
 	pass
 	

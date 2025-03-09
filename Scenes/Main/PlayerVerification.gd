@@ -16,11 +16,13 @@ func Verify(player_id, token):
 			token_verification = true
 			CreatePlayerContainer(player_id)
 			awaiting_verification.erase(player_id)
+			main_interface.names[str(player_id)] = main_interface.token_names[str(token)]
+			print(main_interface.names[str(player_id)])
 			main_interface.expected_tokens.erase(token)
 			break
 		else:
 			await get_tree().create_timer(2).timeout
-	main_interface.S_ReturnTokenVerificationResults(player_id, token_verification)
+	main_interface.S_ReturnTokenVerificationResults(player_id, token_verification,name)
 	if token_verification == false: #Make sure people are disconnected
 		awaiting_verification.erase(player_id)
 		main_interface.network.disconnect_peer(player_id)

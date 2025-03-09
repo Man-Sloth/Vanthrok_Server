@@ -14,6 +14,8 @@ signal player_disconnected(peer_id)
 signal server_disconnected
 
 var expected_tokens = []
+var token_names = {}
+var names = {}
 var player_state_collection = {}
 
 var players = {}
@@ -89,6 +91,106 @@ func S_FetchToken(player_id):
 func SendWorldState(world_state):
 	rpc_id(0, "ReceiveWorldState", world_state)
 
+@rpc ("any_peer", "call_remote", "reliable")
+func CreateCharacter(char_name, slot, str, dex, intel, con, remaining):
+	var total = int(str) + int(dex) + int(intel) + int(con) + int(remaining)
+	if int(str) > 12 or int(dex) > 12 or int(intel) > 12 or int(con) > 12 or int(remaining) > 2 or total > 42:
+		return
+	else:
+		var character = {}
+		character["name"] = char_name
+		character["slot"] = slot
+		character["Head"] = "Field_Pants"
+		character["Chest"] = "Field_Shirt"
+		character["Gauntlets"] = "Field_Gloves"
+		character["Leggings"] = "Field_Pants"
+		character["Weapon"] = ""
+		character["Shield"] = ""
+		character["Strength"] = str
+		character["Dexterity"] = dex
+		character["Intelligence"] = intel
+		character["Constitution"] = con
+		character["RemainingStats"] = remaining
+		character["Bag"] = {}
+		character["Bank"] = {}
+		character["Health"] = 20 + ((int(con)-10) * 5)
+		character["MaxHealth"] = character["Health"]
+		character["Mana"] = 10 + ((int(intel)-10) * 5)
+		character["MaxMana"] = character["Mana"]
+		character["Food"] = 100
+		character["MaxFood"] = 100
+		character["MaxWeight"] = 250 + ((int(str)-10) * 5)
+		character["Experience"] = 0
+		character["Alignment"] = 500
+		
+		var player_id = multiplayer.get_remote_sender_id()
+		S_Save_Character(character, player_id)
+
+@rpc ("any_peer", "call_remote", "reliable")
+func S_Save_Character(character,player_id):
+	if character["slot"] > 3:
+		return
+	var username = names[str(player_id)]
+	var names = {}
+	var players ={"Players": names}
+	
+	var path = "user://Data/PlayerData.json"
+	
+	if FileAccess.file_exists(path):
+		print("File exists. Writing to it.")
+	else:
+		print("File does not exist. Creating file.")
+		
+	var file = FileAccess.open(path, FileAccess.ModeFlags.READ_WRITE)
+	if file:
+		var json_text = file.get_as_text()
+		var json_object = JSON.new()
+		json_object.parse(json_text)
+		var player_stats = json_object.data
+		
+		if !player_stats:
+			player_stats = {}
+		if !player_stats.has("Players"):
+			player_stats["Players"] = {}
+		if player_stats["Players"].has(username):
+			player_stats["Players"][username][str(character["slot"])] = character
+		else:
+			player_stats["Players"][username] = {}
+			player_stats["Players"][username][str(character["slot"])] = {}
+			player_stats["Players"][username][str(character["slot"])] = character
+		
+		json_text = JSON.stringify(player_stats, "\t")
+		file.store_string(json_text)
+		print("Data written to file.")
+		SendCharacters(player_id, player_stats)
+	else:
+		print("Failed to open or create the file.")
+
+@rpc ("any_peer", "call_remote", "reliable")
+func SendCharacters(id, player_stats):
+	var player_id = id
+	if names == {}:
+		return
+	var username = names[str(player_id)]
+	var path = "user://Data/PlayerData.json"
+	var file = FileAccess.open(path, FileAccess.ModeFlags.READ)
+	if file:
+		var json_text = file.get_as_text()
+		var json_object = JSON.new()
+		json_object.parse(json_text)
+		
+		if !player_stats:
+			player_stats = json_object.data
+		
+		if !player_stats:
+			rpc_id(player_id, "ReceiveCharacters", {})
+			return
+		if player_stats["Players"].has(username):
+			var characters = player_stats["Players"][username]
+			rpc_id(player_id, "ReceiveCharacters", characters)
+		else:
+			rpc_id(player_id, "ReceiveCharacters", {})
+			
 func SendTOD(new_tod_image, player_id):
 	rpc_id(player_id, "ReceiveTOD", new_tod_image)
 	
@@ -98,8 +200,8 @@ func ReturnToken(token):
 	player_verification_process.Verify(player_id, token)
 
 @rpc ("any_peer", "call_remote", "reliable")
-func S_ReturnTokenVerificationResults(player_id, result):
-	rpc_id(player_id, "ReturnTokenVerificationResults", result)
+func S_ReturnTokenVerificationResults(player_id, result, name):
+	rpc_id(player_id, "ReturnTokenVerificationResults", result, name)
 	if result == true:
 		rpc_id(0, "SpawnNewPlayer", player_id, Vector2(50, 50))
 	
@@ -166,7 +268,11 @@ func Receive_XP(xp_amount):
 @warning_ignore("unused_parameter")
 func ReceiveAttack(facing, spawn_time, id): #spawn time for projectiles
 	pass
-
+	
+@rpc ("any_peer", "call_remote", "reliable")
+func ReceiveCharacters(characters):
+	pass
+	
 @rpc("any_peer", "call_remote", "reliable")
 @warning_ignore("unused_parameter")
 func ReturnPlayerStats(stats):

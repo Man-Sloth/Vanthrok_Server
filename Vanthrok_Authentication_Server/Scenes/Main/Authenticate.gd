@@ -65,7 +65,7 @@ func S_AuthenticatePlayer(username, password, player_id):
 			randomize()
 			token = str(randi()).sha256_text() + str((Time.get_unix_time_from_system() * 1000))
 			var gameserver = "GameServer1" #This will need to be replaced with a load balancer for multiple game servers
-			GameServers.DistributeLoginToken(token, gameserver)
+			GameServers.DistributeLoginToken(token, gameserver,username)
 	
 	print("Authentication result sent to gateway server")
 	rpc_id(gateway_id, "AuthenticationResults", result, player_id, token)
