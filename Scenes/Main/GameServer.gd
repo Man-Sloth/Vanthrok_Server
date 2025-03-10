@@ -100,7 +100,7 @@ func CreateCharacter(char_name, slot, str, dex, intel, con, remaining):
 		var character = {}
 		character["name"] = char_name
 		character["slot"] = slot
-		character["Head"] = "Field_Pants"
+		character["Head"] = "Field_Hat"
 		character["Chest"] = "Field_Shirt"
 		character["Gauntlets"] = "Field_Gloves"
 		character["Leggings"] = "Field_Pants"
