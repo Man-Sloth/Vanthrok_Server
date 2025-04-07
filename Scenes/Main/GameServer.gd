@@ -19,6 +19,8 @@ var names = {}
 var player_state_collection = {}
 
 var players = {}
+var characters = {}
+var loaded_characters = {}
 var player_info = {"name": "Name"}
 var players_loaded = 0
 var start_time = 0
@@ -26,6 +28,7 @@ var tod = 0
 var tod_ratio = 12
 var tod_image = 0
 var last_image = 0
+var chat_log = ""
 
 func _ready():
 	StartServer()
@@ -71,17 +74,21 @@ func _on_player_disconnected(player_id):
 	if get_node("WorldMap/Chunk 1/Players").has_node(str(player_id)):
 		get_node("WorldMap/Chunk 1/Players/" + str(player_id)).queue_free()
 		player_state_collection.erase(player_id)
+		loaded_characters.erase(player_id)
+		characters.erase(player_id)
+		names.erase(str(player_id))
 		rpc_id(0, "DespawnPlayer", player_id)
+		
 func _on_token_expiration_timeout():
-	var current_time = (Time.get_unix_time_from_system() * 1000)
+	var current_time = (Time.get_unix_time_from_system()*1000)
 	var token_time
 	if expected_tokens == []:
 		pass
 	else:
 		for i in range(expected_tokens.size() -1, -1, -1):
-			token_time = int(expected_tokens[i].right(64))
+			token_time = float(expected_tokens[i].right(-64))
 			if current_time - token_time >= 30000:
-				expected_tokens.remove(i)
+				expected_tokens.remove_at(i)
 	print("Expected Tokens:")
 	print(expected_tokens)
 
@@ -90,7 +97,40 @@ func S_FetchToken(player_id):
 
 func SendWorldState(world_state):
 	rpc_id(0, "ReceiveWorldState", world_state)
+	
+@rpc ("any_peer", "call_remote", "reliable")
+func RemoveLoot(enemy_id, loot_id):	
+	if map.enemy_list.has(enemy_id.to_int()):
+		map.enemy_list[enemy_id.to_int()]["Lt"].erase(loot_id)
+	else:
+		var breakspot
+	if get_node("/root/GameServer/WorldMap/Chunk 1/Enemies/" + str(enemy_id)) != null:
+		var loot = get_node("/root/GameServer/WorldMap/Chunk 1/Enemies/" + str(enemy_id)).loot_object.get_child(loot_id)
+		if loot != null:
+			var loot_parent = get_node("/root/GameServer/WorldMap/Chunk 1/Enemies/" + str(enemy_id)).loot_object
+			for enemy in map.enemy_list:
+				for num in map.enemy_list[enemy]["Lt"]:
+					if num > loot.info["bag_ID"]:
+						map.enemy_list[enemy]["Lt"][num]["bag_ID"] -= 1
+					
+			loot.queue_free()
+		rpc_id(0, "RemoveLootItem", enemy_id, loot_id)
 
+@rpc ("any_peer", "call_remote", "reliable")
+func ReturnChat(new_text):
+	var player_id = multiplayer.get_remote_sender_id()
+	var username = names[str(player_id)]
+	var char_name = loaded_characters[player_id].name
+	chat_log = chat_log + char_name + ": " + new_text + "\n"
+	var message = char_name + ": " + new_text + "\n"
+	rpc_id(0, "ReceiveChat", message )
+
+@rpc ("any_peer", "call_remote", "reliable")
+func ReturnLog():
+	pass
+	#var player_id = multiplayer.get_remote_sender_id()
+	#rpc_id(player_id, "ReceiveChat", chat_log )
+	
 @rpc ("any_peer", "call_remote", "reliable")
 func CreateCharacter(char_name, slot, str, dex, intel, con, remaining):
 	var total = int(str) + int(dex) + int(intel) + int(con) + int(remaining)
@@ -99,6 +139,7 @@ func CreateCharacter(char_name, slot, str, dex, intel, con, remaining):
 	else:
 		var character = {}
 		character["name"] = char_name
+		character["Level"] = 1
 		character["slot"] = slot
 		character["Head"] = "Field_Hat"
 		character["Chest"] = "Field_Shirt"
@@ -119,12 +160,20 @@ func CreateCharacter(char_name, slot, str, dex, intel, con, remaining):
 		character["MaxMana"] = character["Mana"]
 		character["Food"] = 100
 		character["MaxFood"] = 100
+		character["Weight"] = 0
 		character["MaxWeight"] = 250 + ((int(str)-10) * 5)
 		character["Experience"] = 0
 		character["Alignment"] = 500
 		
 		var player_id = multiplayer.get_remote_sender_id()
 		S_Save_Character(character, player_id)
+
+@rpc ("any_peer", "call_remote", "reliable")
+func S_LoadCharacter(char_slot):
+	var peer_id = multiplayer.get_remote_sender_id()
+	var username = names[str(peer_id)]
+	
+	loaded_characters[peer_id] = characters[peer_id][str(char_slot)]
 
 @rpc ("any_peer", "call_remote", "reliable")
 func S_Save_Character(character,player_id):
@@ -186,8 +235,9 @@ func SendCharacters(id, player_stats):
 			rpc_id(player_id, "ReceiveCharacters", {})
 			return
 		if player_stats["Players"].has(username):
-			var characters = player_stats["Players"][username]
-			rpc_id(player_id, "ReceiveCharacters", characters)
+			var p_characters = player_stats["Players"][username]
+			rpc_id(player_id, "ReceiveCharacters", p_characters)
+			characters[player_id] = p_characters
 		else:
 			rpc_id(player_id, "ReceiveCharacters", {})
 			
@@ -200,8 +250,8 @@ func ReturnToken(token):
 	player_verification_process.Verify(player_id, token)
 
 @rpc ("any_peer", "call_remote", "reliable")
-func S_ReturnTokenVerificationResults(player_id, result, name):
-	rpc_id(player_id, "ReturnTokenVerificationResults", result, name)
+func S_ReturnTokenVerificationResults(player_id, result):
+	rpc_id(player_id, "ReturnTokenVerificationResults", result)
 	if result == true:
 		rpc_id(0, "SpawnNewPlayer", player_id, Vector2(50, 50))
 	
@@ -230,8 +280,9 @@ func ReceivePlayerState(player_state):
 	if player_state_collection.has(player_id):
 		if player_state_collection[player_id]["T"] < player_state["T"]:
 			var player = get_node("WorldMap/Chunk 1/Players/" +str(player_id)+"/Player")
-			player.position = player_state_collection[player_id]["P"]
-			player_state_collection[player_id] = player_state
+			if player:
+				player.position = player_state_collection[player_id]["P"]
+				player_state_collection[player_id] = player_state
 	else:
 		player_state_collection[player_id] = player_state
 		
@@ -259,6 +310,12 @@ func Attack(facing, spawn_time): #spawn time for projectiles
 func Return_XP(player_id, xp_amount):
 	#player_id.add_xp(xp_amount)
 	rpc_id(player_id, "Receive_XP", xp_amount)
+	
+@rpc ("any_peer", "call_remote", "reliable")
+func ReturnLoot(enemy_id):
+	var player_id = multiplayer.get_remote_sender_id()
+	var loot = map.get_loot(enemy_id)
+	rpc_id(player_id, "ReceiveLoot" , enemy_id, loot)
 	
 @rpc ("any_peer", "call_remote", "reliable")
 func Receive_XP(xp_amount):
@@ -320,4 +377,24 @@ func ReturnLatency(client_time):
 @rpc("any_peer", "call_remote", "reliable")
 @warning_ignore("unused_parameter")
 func ReceiveTOD(tod_index):
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
+func LoadCharacter(char_slot):
+	pass
+	
+@rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
+func ReceiveLoot(enemy_id, loot):
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
+func ReceiveChat(chat_log):
+	pass
+
+@rpc("any_peer", "call_remote", "reliable")
+@warning_ignore("unused_parameter")
+func RemoveLootItem(enemy_id, loot_id):
 	pass

@@ -28,7 +28,7 @@ func GenerateSalt():
 	return salt
 
 func GenerateHashedPassword(password, salt):
-	print(str((Time.get_unix_time_from_system() * 1000)))
+	print(str((Time.get_unix_time_from_system())))
 	var hashed_password = password
 	var rounds = pow(2,18) #pow(2,18) = 262144 times longer to brute force
 	print("hashed password as input: " + hashed_password)
@@ -37,7 +37,7 @@ func GenerateHashedPassword(password, salt):
 		#print("password @ round: " + str(rounds) + " is: " + hashed_password)
 		rounds -= 1
 	print("final hashed password: " + hashed_password)
-	print(str((Time.get_unix_time_from_system() * 1000)))
+	print(str((Time.get_unix_time_from_system())))
 	return hashed_password
 	
 @rpc("any_peer", "call_remote", "reliable")
@@ -63,7 +63,7 @@ func S_AuthenticatePlayer(username, password, player_id):
 			result = true
 			
 			randomize()
-			token = str(randi()).sha256_text() + str((Time.get_unix_time_from_system() * 1000))
+			token = str(randi()).sha256_text() + str((Time.get_unix_time_from_system()*1000))
 			var gameserver = "GameServer1" #This will need to be replaced with a load balancer for multiple game servers
 			GameServers.DistributeLoginToken(token, gameserver,username)
 	

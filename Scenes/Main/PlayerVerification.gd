@@ -22,7 +22,7 @@ func Verify(player_id, token):
 			break
 		else:
 			await get_tree().create_timer(2).timeout
-	main_interface.S_ReturnTokenVerificationResults(player_id, token_verification,name)
+	main_interface.S_ReturnTokenVerificationResults(player_id, token_verification)
 	if token_verification == false: #Make sure people are disconnected
 		awaiting_verification.erase(player_id)
 		main_interface.network.disconnect_peer(player_id)
@@ -36,7 +36,7 @@ func _on_verification_expiration_timeout():
 		#key = player ids
 		for key in awaiting_verification.keys():
 			start_time = awaiting_verification[key].Timestamp
-			if current_time - start_time >= 30000:
+			if current_time - start_time >= 20000:
 				awaiting_verification.erase(key)
 				var connected_peers = Array(multiplayer.get_peers())
 				if connected_peers.has(key):

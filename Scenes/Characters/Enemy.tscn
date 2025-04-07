@@ -56,6 +56,8 @@ autostart = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_44ob6")
 
+[node name="Loot" type="Node2D" parent="."]
+
 [connection signal="body_entered" from="AggroBody" to="." method="_on_aggro_body_body_entered"]
 [connection signal="body_exited" from="AggroBody" to="." method="_on_aggro_body_body_exited"]
 [connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]

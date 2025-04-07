@@ -18,6 +18,9 @@ var bake_timer = 0.0
 var facing_timer: float = 0.0
 var next_facing: int = 3
 var idle = false
+var loot = []
+@onready var loot_object = $"Loot"
+
 
 func _ready():
 
